@@ -1,23 +1,57 @@
-/* 
-Replace this file with your code. Put your source files in this directory and any libraries in the lib folder. 
-If your main program should be assembly-language replace this file with main.S instead.
-
-Libraries (other than vendor SDK and gcc libraries) must have .h-files in /lib/[library name]/include/ and .c-files in /lib/[library name]/src/ to be included automatically.
-*/
-
 #include "gd32vf103.h"
-#define BITMASK 0xFFFFFFF8
+#include "lcd.h"
+#include "pwm.h"
+#include "adc.h"
+#include "delay.h"
+#include "cordic-math.h"
 
-int main(){
-	uint32_t port = 0;
-	uint32_t count = 0;
-	rcu_periph_clock_enable(RCU_GPIOB);
-	gpio_init(GPIOB, GPIO_MODE_OUT_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2);
-	while(1){
-		count += 1;
-		port = gpio_input_port_get(GPIOB);
-		gpio_port_write(GPIOB, (port & BITMASK) | (count & (~BITMASK)));
-		for(volatile int i = 0; i < 1000000; i++);
-	}
+int shiftArray(int arr[], int n){
+	for (int i=n; i>0; i--){														// crossing x axes?..
+		if (arr[i] == 40) LCD_DrawPoint(i, arr[i], WHITE); 	// ..YES! draw this dot white..
+		else 							LCD_DrawPoint(i, arr[i], BLACK);  // ..else in black
+    
+		arr[i+1] = arr[i];                      // shift 1 step
+    LCD_DrawPoint(i+1, arr[i+1], RED);      // display moved value
+  }
+}
 
+int main(void){
+  uint8_t len = 2;								 
+  int values[160] = {0};    //cols
+  //int dac=0;
+  int16_t adcr, tmpr = 40;
+
+  Lcd_SetType(LCD_INVERTED);                // or use LCD_INVERTED!
+  Lcd_Init();
+  LCD_Clear(BLACK);
+  ADC3powerUpInit(1);                     // Initialize ADC0, Ch3 & Ch16
+
+	// draw coordinates
+	LCD_DrawLine(0, 0, 1, 79, WHITE);
+	LCD_DrawLine(1, 40, 160, 40, WHITE);
+
+  while (1) {
+		//idle++;                             
+    LCD_WR_Queue();                   // Manage LCD com queue!
+
+    if (adc_flag_get(ADC0,ADC_FLAG_EOC)==SET) {   // ...ADC done?
+      adcr = adc_regular_data_read(ADC0);         // ......get data   0<->4095
+      tmpr = (adcr * 79) >> 12; 									// scale adc value in range of 0-79 with divsion 4096
+			LCD_DrawPoint_big(4, tmpr, YELLOW);         // display value on LCD
+      values[1] = tmpr;                           // save the value
+      adc_flag_clear(ADC0, ADC_FLAG_EOC);         // ......clear IF
+    } 
+
+		delay_1ms(20);							// one iteration takes 20 ms
+		
+		// shifting lcd dots
+		shiftArray(values, len);
+		if (len <= 160) len++;
+
+		LCD_DrawPoint_big(4, tmpr, BLACK);      // remove trail before reading next value
+		adc_software_trigger_enable(ADC0,  //Trigger another ADC conversion!
+																	ADC_REGULAR_CHANNEL);
+	
+		while(!delay_finished()); 		// wait until iteration done
+  }
 }
