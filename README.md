@@ -1,14 +1,14 @@
-För att jobba på denna:
-I din github gör en "clone". Sök upp hur "clone github repo to vscode". 
+insignal 
+![alt text][https://github.com/RoboKamu/telekom_fft/blob/cordic_test/lib/images/sin-input.jpg]
 </br>
 </br>
-Lägg clone folder i samma directory som toolchain template. Detta är som ett project. Kom ihåg när vi brukade kopiera template och skapade MyProjekt? Samma process. 
+FFT get massa spikar. För många (?)
+![alt text][https://github.com/RoboKamu/telekom_fft/blob/cordic_test/lib/images/FFT-disp.jpg]
 </br>
 </br>
-INNAN DU BÖRJAR KODA: Längst ned till vänster på vscode kommer det stå "main". Tryck på den och sen "Create new branch". Nämn den till det du ska jobba testa/ göra prototyp på. Välj lämplig namn på branchen. 
+IFFT ger den vita grafen som är invers på FFT på insignal
+![alt text][https://github.com/RoboKamu/telekom_fft/blob/cordic_test/lib/images/white-IFFT.jpg]
 </br>
 </br>
-Nu kan du koda och göra vad du vill på din branch. När du har något som fungerar och vill lägga till main branchen gör via hemsidan på github en "pull request" och notera kamraterna. Om ni inte kan lägga upp något på main branchen och google säger till dig gör något med "git" och "force". GÖR INTE DET. 
-</br>
-</br>
-Om du vill ha en uppdatering från main till din branch tryck på source control symbolen sen "..."  när du lägger musen över source control. Och slutligen pull. 
+Slutligen tillbaka till inläsning av ADC igen
+![alt text][https://github.com/RoboKamu/telekom_fft/blob/cordic_test/lib/images/back.jpg]
