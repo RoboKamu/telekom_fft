@@ -2,7 +2,7 @@
 
 #include "stdint.h"
 
-#define FFT_MATH_FRACTION_BITS 16
+#define FFT_MATH_FRACTION_BITS 8
 
 typedef struct {
     int real;
