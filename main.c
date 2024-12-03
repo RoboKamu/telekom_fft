@@ -1,4 +1,3 @@
-
 #include "gd32vf103.h"
 #include "lcd.h"
 #include "adc.h"
@@ -83,7 +82,7 @@ void shiftArray(Complex arr[], uint8_t n){
 		else 									 LCD_DrawPoint(i, arr[i].real, BLACK);  // ..else in black
     
 		arr[i+1] = arr[i];		                       // shift 1 step
-    if (i <= FFT_WIDTH)
+    if (i < FFT_WIDTH)
 			LCD_DrawPoint(i+1, arr[i+1].real, BLUE);      // display moved value
   }
 }
