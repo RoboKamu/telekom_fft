@@ -29,7 +29,7 @@ int main(void){
   LCD_Clear(BLACK);
   ADC3powerUpInit(1);                     // Initialize ADC0, Ch3 & Ch16
 
-	// draw x-y axis
+	// draw x-y axes
 	DRAW_X_Y(WHITE);
 	
   while (1) {                             
@@ -72,7 +72,7 @@ int main(void){
 			while(!delay_finished()); 		// display for 2 seconds
 			
 			LCD_Clear(BLACK);
-			DRAW_X_Y(WHITE);							// draw the original axis again
+			DRAW_X_Y(WHITE);							// draw the original axes again
 		}
 	}
 }
@@ -93,8 +93,8 @@ void visualize_fft(Complex *x, int16_t N){				//where N has to be 2^k
 	int32_t max_magnitude = 0;
 	 
 	for (int16_t i = 0; i<N; i++){
-		magnitudes[i] = cordic_hypotenuse(x[i].real, x[i].imag);
-		magnitudes[i] = magnitudes[i] > LCD_HEIGHT ? LCD_HEIGHT : magnitudes[i];
+		magnitudes[i] = cordic_hypotenuse(x[i].real, x[i].imag);										// calc magnitude
+		magnitudes[i] = magnitudes[i] > LCD_HEIGHT ? LCD_HEIGHT : magnitudes[i];		// limit magnitude
 		if (magnitudes[i] > max_magnitude){
 			max_magnitude = magnitudes[i];
 		}
@@ -112,7 +112,7 @@ void visualize_fft(Complex *x, int16_t N){				//where N has to be 2^k
 		//magnitudes[i] = floor_log2_32(magnitudes[i]);
 	}
 	
-	// draw x-y axis 
+	// draw x-y axes 
 	DRAW_X_Y(WHITE);
 
 	for (int16_t i=0; i<N; i++){
