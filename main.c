@@ -10,11 +10,12 @@
 #define FFT_WIDTH 128
 
 #define DRAW_X_Y(COLOR) \
-		LCD_DrawLine(0, 0, 1, LCD_HEIGHT, COLOR); \
-		LCD_DrawLine(1, 40, LCD_WIDTH, 40, COLOR);
+		LCD_DrawLine(0, 0, 0, LCD_HEIGHT, COLOR); \
+		LCD_DrawLine(0, 40, LCD_WIDTH, 40, COLOR);
 
 void shiftArray(Complex arr[], uint8_t n);
 void visualize_fft(Complex *x, int16_t N);
+void visualize_ifft(Complex *x, int16_t N);
 
 int main(void){
   uint8_t len = 1;								 
@@ -55,22 +56,22 @@ int main(void){
 	
 		while(!delay_finished()); 		// wait until iteration done
   
-		if (idle==500){										// wait until 10 seconds have passed
-			// testing fft visuals
+		if (!(idle%500)){										// every 6 seconds..
+			// test fft visuals
 			LCD_Clear(BLACK);
 			fft(samples, len-1); 
 			visualize_fft(samples, len-1);
+			delay_1ms(3000);
+			while(!delay_finished()); 		// display for 2 seconds
+			
+			// test inverse visuals
+			LCD_Clear(BLACK);
+			inverse_fft(samples, len-1);
+			visualize_ifft(samples, len-1);
 			delay_1ms(2000);
 			while(!delay_finished()); 		// display for 2 seconds
 			
-			// testing inverse visuals
 			LCD_Clear(BLACK);
-			inverse_fft(samples, len-1);
-			visualize_fft(samples, len-1);
-			delay_1ms(2000);
-			while(!delay_finished()); 		// display for 2 seconds
-			LCD_Clear(BLACK);
-
 			DRAW_X_Y(WHITE);							// draw the original axis again
 		}
 	}
@@ -92,25 +93,36 @@ void visualize_fft(Complex *x, int16_t N){				//where N has to be 2^k
 	int32_t max_magnitude = 0;
 	 
 	for (int16_t i = 0; i<N; i++){
-		magnitudes[i] = cordic_hypotenuse(x[i].imag, x[i].real);
+		magnitudes[i] = cordic_hypotenuse(x[i].real, x[i].imag);
+		magnitudes[i] = magnitudes[i] > LCD_HEIGHT ? LCD_HEIGHT : magnitudes[i];
 		if (magnitudes[i] > max_magnitude){
 			max_magnitude = magnitudes[i];
 		}
 	}
- 
+
+  // prevent scaling issues
+	max_magnitude = max_magnitude == 0 ? 1 : max_magnitude; 		 
+
 	// scale the magnitudes according to the max for the LCD
 	for (int16_t i = 0; i<N; i++){
 		// fixed division with max magnitude
 		magnitudes[i] = (magnitudes[i] << CORDIC_MATH_FRACTION_BITS) / max_magnitude;
-		// fixed multiplication with LCD height
+		// fixed multiplication with half of LCD height
 		magnitudes[i] = (magnitudes[i] >> CORDIC_MATH_FRACTION_BITS) * (LCD_HEIGHT/2);
+		//magnitudes[i] = floor_log2_32(magnitudes[i]);
 	}
 	
 	// draw x-y axis 
-	DRAW_X_Y(YELLOW);
+	DRAW_X_Y(WHITE);
 
 	for (int16_t i=0; i<N; i++){
-		LCD_DrawLine(i, 40, i, magnitudes[i], RED);		// freq spectrum
-		LCD_DrawPoint(i, x[i].real, WHITE);						// original signal (only white dots when not invers)
+		LCD_DrawLine(i+1, 40, i+1, 40-magnitudes[i], RED);		// freq spectrum
+	}
+}
+
+void visualize_ifft(Complex *x, int16_t N){
+	DRAW_X_Y(WHITE);
+	for (int16_t i=0; i<N; i++){
+		LCD_DrawPoint(i, x[i].real, YELLOW);								  // inverse FFT of input signal
 	}
 }

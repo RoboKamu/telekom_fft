@@ -176,7 +176,7 @@ static int32_t ones_32(int32_t n) {
  * @param x the number
  * @return floor log2 of x
  */
-static int32_t floor_log2_32(int32_t x) {
+int32_t floor_log2_32(int32_t x) {
     x |= (x >> 1);
     x |= (x >> 2);
     x |= (x >> 4);
