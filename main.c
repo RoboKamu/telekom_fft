@@ -13,7 +13,7 @@
 		LCD_DrawLine(0, 0, 0, LCD_HEIGHT, COLOR); \
 		LCD_DrawLine(0, 40, LCD_WIDTH, 40, COLOR);
 
-void shiftArray(Complex arr[], uint8_t n);
+void shiftArray(Complex arr[], uint8_t n, int dc);
 void visualize_fft(Complex *x, int16_t N);
 void visualize_ifft(Complex *x, int16_t N);
 
@@ -21,6 +21,10 @@ int main(void){
   uint8_t len = 1;								 
   int idle =0;//int dac=0;
   int16_t adcr, tmpr = 40;
+	int DC;
+	int max_val;
+	int min_val;
+	static int g = 0b00000101;							// 80/4096 = 0,01953125 << 8
 
 	Complex samples[FFT_WIDTH] = { {0, 0} }; 				// initialize all samples to 0 first
 
@@ -33,28 +37,27 @@ int main(void){
 	DRAW_X_Y(WHITE);
 	
   while (1) {                             
+
+		delay_until_1us(100);							// can sample around 5 Hz
+
 		idle++;
 	  LCD_WR_Queue();                   // Manage LCD com queue!
 
 		if (adc_flag_get(ADC0,ADC_FLAG_EOC)==SET) {   // ...ADC done?
 			adcr = adc_regular_data_read(ADC0);         // ......get data   0<->4095
-			tmpr = (adcr * LCD_HEIGHT) >> 12; 					// scale adc value in range of 0-LCD_HEIGHT with divsion 4096
+			tmpr = (int16_t)(adcr * g) >> 8; 					// scale adc value in range of 0-LCD_HEIGHT with divsion 4096
 			LCD_DrawPoint_big(4, tmpr, YELLOW);         // display value on LCD
 			samples[1].real = tmpr;                     // save the value
 			adc_flag_clear(ADC0, ADC_FLAG_EOC);         // ......clear IF
 		} 
 
-		delay_1ms(12);							// one iteration takes ~12 ms
-		
 		// shifting lcd dots
-		shiftArray(samples, len);
+		shiftArray(samples, len, DC);
 		if (len <= FFT_WIDTH) len++;
 
 		LCD_DrawPoint_big(4, tmpr, BLACK);      // remove trail before reading next value
 		adc_software_trigger_enable(ADC0,  //Trigger another ADC conversion!
 																	ADC_REGULAR_CHANNEL);
-	
-		while(!delay_finished()); 		// wait until iteration done
   
 		if (!(idle%500)){										// every 6 seconds..
 			// test fft visuals
@@ -74,17 +77,20 @@ int main(void){
 			LCD_Clear(BLACK);
 			DRAW_X_Y(WHITE);							// draw the original axes again
 		}
+
+			
+		while(!delay_finished()); 		// wait until iteration done
+
+
 	}
 }
 
-void shiftArray(Complex arr[], uint8_t n){
-	for (uint8_t i=n-1; i>0; i--){														// crossing x axes?..
-		if (arr[i].real == 40) LCD_DrawPoint(i, arr[i].real, WHITE); 	// ..YES! draw this dot white..
-		else 									 LCD_DrawPoint(i, arr[i].real, BLACK);  // ..else in black
-    
-		arr[i+1] = arr[i];		                       // shift 1 step
-    if (i < FFT_WIDTH)
-			LCD_DrawPoint(i+1, arr[i+1].real, BLUE);      // display moved value
+void shiftArray(Complex arr[], uint8_t n, int dc){
+	DRAW_X_Y(WHITE);
+	for (uint8_t i=n-1; i>0; i--){																	
+		LCD_DrawPoint(i, 40-arr[i].real, BLACK);   											 // remove trail
+		arr[i+1] = arr[i];		                       									 // shift 1 step
+    if (i < FFT_WIDTH) LCD_DrawPoint(i+1, 40-arr[i+1].real, BLUE);    // display moved value
   }
 }
 
