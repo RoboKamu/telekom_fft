@@ -16,7 +16,7 @@ void ADC3powerUpInit(int tmp) {
     adc_channel_length_config(ADC0, ADC_REGULAR_CHANNEL, 1);            // Convert one channel
 
     adc_regular_channel_config(ADC0, 0, ADC_CHANNEL_3, 
-                               ADC_SAMPLETIME_13POINT5);                // Conv. takes 13.5us
+                               ADC_SAMPLETIME_1POINT5);                // Conv. takes 1.5us not 13.5us
     adc_external_trigger_source_config(ADC0, ADC_REGULAR_CHANNEL, 
                                        ADC0_1_EXTTRIG_REGULAR_NONE);    // SW Trigger
     adc_external_trigger_config(ADC0, ADC_REGULAR_CHANNEL, ENABLE);     // Enable trigger
