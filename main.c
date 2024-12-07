@@ -14,7 +14,6 @@
 		LCD_DrawLine(0, 0, 0, LCD_HEIGHT, COLOR); \
 		LCD_DrawLine(0, 40, LCD_WIDTH, 40, COLOR);
 
-void shiftArray(Complex arr[], uint8_t n, int dc);
 void visualize_fft(Complex *x, int16_t N);
 void visualize_ifft(Complex *x, int16_t N);
 
@@ -67,7 +66,6 @@ int main(void){
 			pSamples[i].imag = 0;
 		}
 		count = ARRAY_SIZE;
-		// while (count < ARRAY_SIZE) pSamples[(count++)].real = 0;
 	}
 }
 
@@ -88,6 +86,7 @@ void visualize_fft(Complex *x, int16_t N){
 
 	// scale the magnitudes according to the max for the LCD
 	for (int16_t i = 0; i<N; i++){
+		// use fixpoint for 
 		magnitudes[i] = (magnitudes[i] << CORDIC_MATH_FRACTION_BITS) / max_magnitude;
 		magnitudes[i] = (magnitudes[i] * LCD_HEIGHT_HALF) >> CORDIC_MATH_FRACTION_BITS;
 		//magnitudes[i] = floor_log2_32(1 + magnitudes[i]);
@@ -113,7 +112,7 @@ void visualize_ifft(Complex *x, int16_t N){
 	LCD_Clear(BLACK);
 	DRAW_X_Y(WHITE);
 	for (int16_t i=0; i<N; i++){
-		LCD_DrawPoint(i, (40+dc) - x[i].real, YELLOW);
+		LCD_DrawPoint(i, (40+dc) - x[i].real, YELLOW);		// draw IFFT
 	}
-	LCD_Wait_On_Queue(); 		// wait until LCD finished drawing
+	LCD_Wait_On_Queue(); 					// wait until LCD finished drawing
 }
