@@ -6,9 +6,13 @@ TODO:
 - [x] Visualize on LCD
 - [x] Center graph (get max and min)
 - [x] make more effective (optional)
-- [ ] Learn to use get_timer_value() in order to see how long calculations take
-- [ ] Interrupt for ADC instead?
+- [x] Interrupt for ADC instead?
 </br>
--> Can sample up to around 3 kHz compared to main  branch of 5 Hz.
+Changes:
+- pointer to array
+- Data corrupsion problem
+- Array handling issue
+- DC offset calculation
+- FFT visuals 
 </br>
 Note: Using Gd32v linux toolchain.
