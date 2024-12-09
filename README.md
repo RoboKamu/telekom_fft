@@ -1,4 +1,4 @@
-Works, but not higher than around 5 Hz.
+Works, but not higher than around 24 kHz.
 </br>
 TODO:
 - [x] Sample
@@ -14,10 +14,6 @@ Changes to the normal fast version:
 - freq spectrum in log scale (times 10 for visibility, can change)
 - comments, data structures and variable names
 </br>
-More? (theory) 
-- Read 128 samples straight to DMA
-- once 128 samples reached -> Interrupt
-- clone values to an array (?) 
-- calc and visualize
+Professor observation: Dont clear. Only remove the specifik LCD values that are on. The LCD is what takes a lot of time in this program. 
 </br>
 Note: Using Gd32v linux toolchain.

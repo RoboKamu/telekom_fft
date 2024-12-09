@@ -33,8 +33,6 @@ int main(void){
 
   while (1) {                             
 		do{
-			delay_until_1us(300); // using 300 us when working without function generator
-
 			if (adc_flag_get(ADC0,ADC_FLAG_EOC)==SET) {   // ...ADC done?
 				adcr = adc_regular_data_read(ADC0);         // ......get data   0<->4096
 				pSamples[(--count)].real = adcr;            // ......backfill sample value to array
@@ -42,7 +40,6 @@ int main(void){
 			}
 			adc_software_trigger_enable(ADC0,  //Trigger another ADC conversion!
 																		ADC_REGULAR_CHANNEL);
-			while(!delay_finished()); 		// wait until iteration done
 		}while(count>0);					// do this until 128 samples
 	
 		// test fft visuals
@@ -82,12 +79,13 @@ void visualize_fft(Complex *x, int16_t N){
 	// scale the magnitudes according to the max for the LCD
 	for (uint8_t i = 0; i<N; i++){
 		magnitudes[i] = (magnitudes[i] << CORDIC_MATH_FRACTION_BITS) / max_magnitude;			//...Devide by maximum value
-		magnitudes[i] = (magnitudes[i] * LCD_HEIGHT_HALF) >> CORDIC_MATH_FRACTION_BITS;		//....multiply with desired height (half LCD)
+		magnitudes[i] = (magnitudes[i] * LCD_HEIGHT) >> CORDIC_MATH_FRACTION_BITS;		//....multiply with desired height (half LCD)
 		magnitudes[i] = magnitudes[i] > LCD_HEIGHT ? LCD_HEIGHT : magnitudes[i];				  //....limit magnitude
-		magnitudes[i] = floor_log2_32(1 + magnitudes[i]) * 10; 														//....log scaling, modified for visibility
+		//magnitudes[i] = floor_log2_32(1 + magnitudes[i]) * 10; 														//....log scaling, modified for visibility
 	}
 	
-	// draw x-y axes 
+	// draw x-y axes 		LCD_DrawPoint(i, (40+dc) - x[i].real, BLUE);		// draw IFFT
+
 	LCD_Clear(BLACK);
 	DRAW_X_Y(WHITE);
 
@@ -110,7 +108,7 @@ void visualize_ifft(Complex *x, int16_t N, int8_t sf){
 	LCD_Clear(BLACK);
 	DRAW_X_Y(WHITE);
 	for (uint8_t i=0; i<N; i++){
-		LCD_DrawPoint(i, (40+dc) - x[i].real, YELLOW);		// draw IFFT
+		LCD_DrawPoint(i, (40+dc) - x[i].real, BLUE);		// draw IFFT
 	}
 	LCD_Wait_On_Queue();					// wait until LCD finished drawing
 }
