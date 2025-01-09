@@ -1,4 +1,4 @@
-Works, but not higher than around 24 kHz.
+Works, but not higher than around 26 kHz before aliasing
 </br>
 TODO:
 - [x] Sample
@@ -7,6 +7,7 @@ TODO:
 - [x] Center graph (get max and min)
 - [x] make more effective (optional)
 - [x] Interrupt for ADC instead?
+- [ ] DMA to trigger interrupt
 
 Changes to the normal fast version:
 - fixed calculations on visualize_fft function
