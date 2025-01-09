@@ -19,3 +19,7 @@ Professor observation: Dont clear. Only remove the specifik LCD values that are 
 </br>
 </br>
 Note: Using Gd32v linux toolchain.
+</br>
+</br>
+CREDITS MATH LIBRARY
+[Cordic-Math library](https://github.com/Max-Gulda/Cordic-Math/tree/main)
